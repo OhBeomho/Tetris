@@ -1,13 +1,15 @@
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
+// 한 칸 크기
 const cellSize = 40;
 const cellCanvasWidth = canvas.width / cellSize;
 const cellCanvasHeight = canvas.height / cellSize;
 
-class Tetris {
+// 테트리스 블록 클래스
+class TetrisBlock {
 	constructor(...args) {
-		if (args[0] instanceof Tetris) {
+		if (args[0] instanceof TetrisBlock) {
 			this.color = args[0].color;
 			this.shape = args[0].shape;
 		} else {
@@ -19,6 +21,7 @@ class Tetris {
 		this.y = 0;
 	}
 
+	// 위치 업데이트
 	update() {
 		if (!this.checkBottom()) this.y++;
 		else if (this.checkBottom()) this.stop();
@@ -28,7 +31,7 @@ class Tetris {
 	checkBottom() {
 		for (let i = 0; i < this.shape.length; i++) {
 			for (let j = 0; j < this.shape[i].length; j++) {
-				if (this.shape[i][j] && (tArray[this.y + i + 1] === undefined || tArray[this.y + i + 1][this.x + j]))
+				if (this.shape[i][j] && (blocks[this.y + i + 1] === undefined || blocks[this.y + i + 1][this.x + j]))
 					return true;
 			}
 		}
@@ -40,7 +43,7 @@ class Tetris {
 	checkLeft() {
 		for (let i = 0; i < this.shape.length; i++) {
 			for (let j = 0; j < this.shape[i].length; j++) {
-				if (this.shape[i][j] && (tArray[this.y + i][this.x + j - 1] || this.x + j - 1 < 0)) return true;
+				if (this.shape[i][j] && (blocks[this.y + i][this.x + j - 1] || this.x + j - 1 < 0)) return true;
 			}
 		}
 
@@ -51,7 +54,7 @@ class Tetris {
 	checkRight() {
 		for (let i = 0; i < this.shape.length; i++) {
 			for (let j = 0; j < this.shape[i].length; j++) {
-				if (this.shape[i][j] && (tArray[this.y + i][this.x + j + 1] || this.x + j + 1 >= cellCanvasWidth))
+				if (this.shape[i][j] && (blocks[this.y + i][this.x + j + 1] || this.x + j + 1 >= cellCanvasWidth))
 					return true;
 			}
 		}
@@ -59,12 +62,13 @@ class Tetris {
 		return false;
 	}
 
+	// 블록 쌓기
 	stop() {
-		nextTetris();
+		nextBlock();
 
 		for (let i = 0; i < this.shape.length; i++) {
 			for (let j = 0; j < this.shape.length; j++) {
-				if (this.shape[i][j]) tArray[this.y + i][this.x + j] = this.color;
+				if (this.shape[i][j]) blocks[this.y + i][this.x + j] = this.color;
 			}
 		}
 
@@ -73,6 +77,7 @@ class Tetris {
 		checkComplete();
 	}
 
+	// 현재 모양 그리기
 	draw() {
 		ctx.fillStyle = this.color;
 
@@ -97,6 +102,7 @@ class Tetris {
 		}
 	}
 
+	// 회전
 	rotate() {
 		let tempShape = [];
 		for (let i = 0; i < this.shape.length; i++) tempShape[i] = this.shape[i].slice();
@@ -120,7 +126,7 @@ class Tetris {
 
 		for (let i = 0; i < tempShape.length; i++) {
 			for (let j = 0; j < tempShape[i].length; j++) {
-				if (tempShape[i][j] && (tArray[this.y + i][this.x + j] === undefined || tArray[this.y + i][this.x + j]))
+				if (tempShape[i][j] && (blocks[this.y + i][this.x + j] === undefined || blocks[this.y + i][this.x + j]))
 					return;
 			}
 		}
@@ -133,54 +139,54 @@ class Tetris {
 	}
 }
 
-// 모양들
+// 블록 모양들
 const shapes = [
-	new Tetris('red', [
+	new TetrisBlock('red', [
 		[1, 1, 0],
 		[0, 1, 1],
 		[0, 0, 0]
 	]),
-	new Tetris('cyan', [
+	new TetrisBlock('cyan', [
 		[0, 0, 1, 0],
 		[0, 0, 1, 0],
 		[0, 0, 1, 0],
 		[0, 0, 1, 0]
 	]),
-	new Tetris('blue', [
+	new TetrisBlock('blue', [
 		[1, 0, 0],
 		[1, 1, 1],
 		[0, 0, 0]
 	]),
-	new Tetris('lightgreen', [
+	new TetrisBlock('lightgreen', [
 		[0, 1, 1],
 		[1, 1, 0],
 		[0, 0, 0]
 	]),
-	new Tetris('yellow', [
+	new TetrisBlock('yellow', [
 		[1, 1],
 		[1, 1]
 	]),
-	new Tetris('purple', [
+	new TetrisBlock('purple', [
 		[0, 1, 0],
 		[1, 1, 1],
 		[0, 0, 0]
 	]),
-	new Tetris('orange', [
+	new TetrisBlock('orange', [
 		[0, 0, 1],
 		[1, 1, 1],
 		[0, 0, 0]
 	])
 ];
-let current, next = new Tetris(Object.create(shapes[Math.floor(Math.random() * shapes.length)]));
+let current, next = new TetrisBlock(Object.create(shapes[Math.floor(Math.random() * shapes.length)]));
 
-const tArray = [];
+const blocks = [];
 for (let i = 0; i < cellCanvasHeight; i++) {
 	const array = [];
 	for (let j = 0; j < cellCanvasWidth; j++) {
 		array.push(0);
 	}
 
-	tArray.push(array);
+	blocks.push(array);
 }
 
 let gameLoop;
@@ -188,6 +194,7 @@ let isGameOver = false;
 let started = false;
 let score = 0;
 
+// 그리드
 function drawGrid() {
 	ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
 	ctx.lineWidth = 1;
@@ -207,6 +214,7 @@ function drawGrid() {
 	ctx.stroke();
 }
 
+// 다음 모양
 function drawNext() {
 	ctx.fillStyle = 'white';
 	ctx.font = '24px Segoe UI Light';
@@ -227,6 +235,7 @@ ctx.fillStyle = 'white';
 ctx.font = '30px Segoe UI Black';
 ctx.fillText('Press any key to start', 10, 40);
 
+// 조작법
 ctx.font = '16px Segoe UI Semibold';
 ctx.fillText('R - Rotate', 10, 70);
 ctx.fillText('A, D - Move', 10, 90);
@@ -242,19 +251,17 @@ window.addEventListener('keydown', (e) => {
 
 	const key = e.key.toLowerCase();
 
-	// 회전
 	if (key === 'r') current.rotate();
-	// 좌우 움직이기
 	if (key === 'a' && !current.checkLeft()) current.x--;
 	if (key === 'd' && !current.checkRight()) current.x++;
-	// soft drop
+	// Soft drop
 	if (key === 's') delay = 2;
-	// hard drop
+	// Hard drop
 	if (key === 'x') current.drop();
 });
 
 function startGame() {
-	nextTetris();
+	nextBlock();
 	game();
 }
 
@@ -264,10 +271,11 @@ let delayCount = 0;
 function game() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-	for (let i = 0; i < tArray.length; i++) {
-		for (let j = 0; j < tArray.length; j++) {
-			if (tArray[i][j]) {
-				ctx.fillStyle = tArray[i][j];
+	// 이미 쌓인 블록들 그리기
+	for (let i = 0; i < blocks.length; i++) {
+		for (let j = 0; j < blocks.length; j++) {
+			if (blocks[i][j]) {
+				ctx.fillStyle = blocks[i][j];
 				ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
 			}
 		}
@@ -296,6 +304,7 @@ function game() {
 	gameLoop = requestAnimationFrame(game);
 }
 
+// 게임 오버
 function gameOver() {
 	isGameOver = true;
 
@@ -313,34 +322,37 @@ function gameOver() {
 	}, 1000);
 }
 
-function nextTetris() {
+// 다음 블록으로 교체, 다음 블록 생성
+function nextBlock() {
 	current = next;
 
 	const random = Object.create(shapes[Math.floor(Math.random() * shapes.length)]);
-	next = new Tetris(random);
+	next = new TetrisBlock(random);
 
 	delay = 30;
 }
 
+// 완성된 줄이 있는지 확인
 function checkComplete() {
-	for (let i = 0; i < tArray.length; i++) {
-		if (tArray[i].every((v) => v !== 0)) deleteLine(i);
+	for (let i = 0; i < blocks.length; i++) {
+		if (blocks[i].every((v) => v !== 0)) deleteLine(i);
 	}
 }
 
+// 완성된 줄 제거
 function deleteLine(y) {
 	score += 100;
 
 	// 깜빡거림 효과
 	let effect = setInterval(() => {
-		for (let i = 0; i < tArray[0].length; i++) tArray[y][i] = tArray[y][i] === 'white' ? 'black' : 'white';
+		for (let i = 0; i < blocks[0].length; i++) blocks[y][i] = blocks[y][i] === 'white' ? 'black' : 'white';
 	}, 50);
 
 	setTimeout(() => {
 		clearInterval(effect);
 
 		for (let i = y; i > 0; i--) {
-			for (let j = 0; j < tArray[i].length; j++) tArray[i][j] = tArray[i - 1][j];
+			for (let j = 0; j < blocks[i].length; j++) blocks[i][j] = blocks[i - 1][j];
 		}
 	}, 600);
 }
