@@ -31,7 +31,7 @@ class TetrisBlock {
 	checkBottom() {
 		for (let i = 0; i < this.shape.length; i++) {
 			for (let j = 0; j < this.shape[i].length; j++) {
-				if (this.shape[i][j] && (blocks[this.y + i + 1] === undefined || blocks[this.y + i + 1][this.x + j]))
+				if (this.shape[i][j] && (map[this.y + i + 1] === undefined || map[this.y + i + 1][this.x + j]))
 					return true;
 			}
 		}
@@ -43,7 +43,7 @@ class TetrisBlock {
 	checkLeft() {
 		for (let i = 0; i < this.shape.length; i++) {
 			for (let j = 0; j < this.shape[i].length; j++) {
-				if (this.shape[i][j] && (blocks[this.y + i][this.x + j - 1] || this.x + j - 1 < 0)) return true;
+				if (this.shape[i][j] && (map[this.y + i][this.x + j - 1] || this.x + j - 1 < 0)) return true;
 			}
 		}
 
@@ -54,7 +54,7 @@ class TetrisBlock {
 	checkRight() {
 		for (let i = 0; i < this.shape.length; i++) {
 			for (let j = 0; j < this.shape[i].length; j++) {
-				if (this.shape[i][j] && (blocks[this.y + i][this.x + j + 1] || this.x + j + 1 >= cellCanvasWidth))
+				if (this.shape[i][j] && (map[this.y + i][this.x + j + 1] || this.x + j + 1 >= cellCanvasWidth))
 					return true;
 			}
 		}
@@ -68,7 +68,7 @@ class TetrisBlock {
 
 		for (let i = 0; i < this.shape.length; i++) {
 			for (let j = 0; j < this.shape.length; j++) {
-				if (this.shape[i][j]) blocks[this.y + i][this.x + j] = this.color;
+				if (this.shape[i][j]) map[this.y + i][this.x + j] = this.color;
 			}
 		}
 
@@ -126,7 +126,7 @@ class TetrisBlock {
 
 		for (let i = 0; i < tempShape.length; i++) {
 			for (let j = 0; j < tempShape[i].length; j++) {
-				if (tempShape[i][j] && (blocks[this.y + i][this.x + j] === undefined || blocks[this.y + i][this.x + j]))
+				if (tempShape[i][j] && (map[this.y + i][this.x + j] === undefined || map[this.y + i][this.x + j]))
 					return;
 			}
 		}
@@ -179,14 +179,14 @@ const shapes = [
 ];
 let current, next = new TetrisBlock(Object.create(shapes[Math.floor(Math.random() * shapes.length)]));
 
-const blocks = [];
+const map = [];
 for (let i = 0; i < cellCanvasHeight; i++) {
 	const array = [];
 	for (let j = 0; j < cellCanvasWidth; j++) {
 		array.push(0);
 	}
 
-	blocks.push(array);
+	map.push(array);
 }
 
 let gameLoop;
@@ -272,10 +272,10 @@ function game() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 	// 이미 쌓인 블록들 그리기
-	for (let i = 0; i < blocks.length; i++) {
-		for (let j = 0; j < blocks.length; j++) {
-			if (blocks[i][j]) {
-				ctx.fillStyle = blocks[i][j];
+	for (let i = 0; i < map.length; i++) {
+		for (let j = 0; j < map.length; j++) {
+			if (map[i][j]) {
+				ctx.fillStyle = map[i][j];
 				ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
 			}
 		}
@@ -334,8 +334,8 @@ function nextBlock() {
 
 // 완성된 줄이 있는지 확인
 function checkComplete() {
-	for (let i = 0; i < blocks.length; i++) {
-		if (blocks[i].every((v) => v !== 0)) deleteLine(i);
+	for (let i = 0; i < map.length; i++) {
+		if (map[i].every((v) => v !== 0)) deleteLine(i);
 	}
 }
 
@@ -345,14 +345,14 @@ function deleteLine(y) {
 
 	// 깜빡거림 효과
 	let effect = setInterval(() => {
-		for (let i = 0; i < blocks[0].length; i++) blocks[y][i] = blocks[y][i] === 'white' ? 'black' : 'white';
+		for (let i = 0; i < map[0].length; i++) map[y][i] = map[y][i] === 'white' ? 'black' : 'white';
 	}, 50);
 
 	setTimeout(() => {
 		clearInterval(effect);
 
 		for (let i = y; i > 0; i--) {
-			for (let j = 0; j < blocks[i].length; j++) blocks[i][j] = blocks[i - 1][j];
+			for (let j = 0; j < map[i].length; j++) map[i][j] = map[i - 1][j];
 		}
 	}, 600);
 }
