@@ -205,7 +205,7 @@ ctx.fillText('S - Drop', 10, 100);
 
 window.addEventListener('keydown', (e) => {
 	if (!started) {
-		startGame(4);
+		startGame();
 		started = true;
 		return;
 	}
