@@ -266,8 +266,6 @@ function gameOver() {
 		}
 	}, 100);
 	setTimeout(() => {
-		ctx.clearRect(0, 0, canvas.width, canvas.height);
-
 		ctx.fillStyle = 'white';
 		ctx.font = '50px Segoe UI Light';
 		ctx.fillText('GAME OVER', 10, 60);
