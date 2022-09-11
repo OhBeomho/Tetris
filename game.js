@@ -71,6 +71,8 @@ class Tetris {
 			}
 		}
 
+		if (this.y <= 0) gameOver();
+
 		checkComplete();
 	}
 
@@ -289,8 +291,6 @@ function gameOver() {
 function newTetris() {
 	const random = Object.create(shapes[Math.floor(Math.random() * shapes.length)]);
 	currentTetris = new Tetris(random);
-
-	if (random.checkBottom()) gameOver();
 }
 
 function checkComplete() {
