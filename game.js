@@ -83,6 +83,19 @@ class Tetris {
 					ctx.fillRect((this.x + j) * cellSize, (this.y + i) * cellSize, cellSize, cellSize);
 			}
 		}
+
+		let tempTetris = Object.create(this);
+		tempTetris.x = this.x;
+		tempTetris.y = this.y;
+		while (!tempTetris.checkBottom()) tempTetris.y++;
+		ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+		
+		for (let i = 0; i < tempTetris.shape.length; i++) {
+			for (let j = 0; j < tempTetris.shape[i].length; j++) {
+				if (tempTetris.shape[i][j] === 1)
+					ctx.fillRect((tempTetris.x + j) * cellSize, (tempTetris.y + i) * cellSize, cellSize, cellSize);
+			}
+		}
 	}
 
 	rotate() {
