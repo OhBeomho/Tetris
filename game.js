@@ -60,7 +60,7 @@ class Tetris {
 	}
 
 	stop() {
-		newTetris();
+		nextTetris();
 
 		for (let i = 0; i < this.shape.length; i++) {
 			for (let j = 0; j < this.shape.length; j++) {
@@ -171,7 +171,7 @@ const shapes = [
 		[0, 0, 0]
 	])
 ];
-let currentTetris;
+let current, next = new Tetris(Object.create(shapes[Math.floor(Math.random() * shapes.length)]));
 
 const tArray = [];
 for (let i = 0; i < cellCanvasHeight; i++) {
@@ -207,15 +207,31 @@ function drawGrid() {
 	ctx.stroke();
 }
 
+function drawNext() {
+	ctx.fillStyle = 'white';
+	ctx.font = '24px Segoe UI Light';
+	ctx.fillText('NEXT', 15, 80);
+
+	const miniCellSize = cellSize / 3;
+
+	ctx.fillStyle = next.color;
+	for (let i = 0; i < next.shape.length; i++) {
+		for (let j = 0; j < next.shape[i].length; j++) {
+			if (next.shape[i][j])
+				ctx.fillRect(15 + j * miniCellSize, 85 + i * miniCellSize, miniCellSize, miniCellSize);
+		}
+	}
+}
+
 ctx.fillStyle = 'white';
-ctx.font = '30px Segoe UI Light';
+ctx.font = '30px Segoe UI Black';
 ctx.fillText('Press any key to start', 10, 40);
 
-ctx.font = '16px Segoe UI Light';
-ctx.fillText('R - Rotate', 10, 60);
-ctx.fillText('A, D - Move', 10, 80);
-ctx.fillText('S - Soft Drop', 10, 100);
-ctx.fillText('X - Hard Drop', 10, 120);
+ctx.font = '16px Segoe UI Semibold';
+ctx.fillText('R - Rotate', 10, 70);
+ctx.fillText('A, D - Move', 10, 90);
+ctx.fillText('S - Soft Drop', 10, 110);
+ctx.fillText('X - Hard Drop', 10, 130);
 
 window.addEventListener('keydown', (e) => {
 	if (!started) {
@@ -227,18 +243,18 @@ window.addEventListener('keydown', (e) => {
 	const key = e.key.toLowerCase();
 
 	// 회전
-	if (key === 'r') currentTetris.rotate();
+	if (key === 'r') current.rotate();
 	// 좌우 움직이기
-	if (key === 'a' && !currentTetris.checkLeft()) currentTetris.x--;
-	if (key === 'd' && !currentTetris.checkRight()) currentTetris.x++;
+	if (key === 'a' && !current.checkLeft()) current.x--;
+	if (key === 'd' && !current.checkRight()) current.x++;
 	// soft drop
 	if (key === 's') delay = 2;
 	// hard drop
-	if (key === 'x') currentTetris.drop();
+	if (key === 'x') current.drop();
 });
 
 function startGame() {
-	newTetris();
+	nextTetris();
 	game();
 }
 
@@ -259,13 +275,14 @@ function game() {
 
 	delayCount++;
 
-	currentTetris.draw();
+	current.draw();
 	if (delayCount >= delay) {
-		currentTetris.update();
+		current.update();
 		delayCount = 0;
 	}
 
 	drawGrid();
+	drawNext();
 
 	if (isGameOver) {
 		cancelAnimationFrame(gameLoop);
@@ -284,15 +301,24 @@ function gameOver() {
 
 	setTimeout(() => {
 		ctx.fillStyle = 'white';
-		ctx.font = '50px Segoe UI Light';
+		ctx.strokeStyle = 'black';
+		ctx.lineWidth = 2;
+
+		ctx.font = '50px Segoe UI Black';
+
 		ctx.fillText('GAME OVER', 10, 60);
 		ctx.fillText('SCORE: ' + score, 10, 120);
+		ctx.strokeText('GAME OVER', 10, 60);
+		ctx.strokeText('SCORE: ' + score, 10, 120);
 	}, 1000);
 }
 
-function newTetris() {
+function nextTetris() {
+	current = next;
+
 	const random = Object.create(shapes[Math.floor(Math.random() * shapes.length)]);
-	currentTetris = new Tetris(random);
+	next = new Tetris(random);
+
 	delay = 30;
 }
 
