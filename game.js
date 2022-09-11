@@ -123,9 +123,9 @@ class Tetris {
 
 const shapes = [
 	new Tetris('red', [
-		[0, 0, 0],
 		[1, 1, 0],
-		[0, 1, 1]
+		[0, 1, 1],
+		[0, 0, 0]
 	]),
 	new Tetris('cyan', [
 		[0, 0, 1, 0],
@@ -134,28 +134,28 @@ const shapes = [
 		[0, 0, 1, 0]
 	]),
 	new Tetris('blue', [
-		[0, 0, 0],
 		[1, 0, 0],
-		[1, 1, 1]
+		[1, 1, 1],
+		[0, 0, 0]
 	]),
 	new Tetris('lightgreen', [
-		[0, 0, 0],
 		[0, 1, 1],
-		[1, 1, 0]
+		[1, 1, 0],
+		[0, 0, 0]
 	]),
 	new Tetris('yellow', [
 		[1, 1],
 		[1, 1]
 	]),
 	new Tetris('purple', [
-		[0, 0, 0],
 		[0, 1, 0],
-		[1, 1, 1]
+		[1, 1, 1],
+		[0, 0, 0]
 	]),
 	new Tetris('orange', [
-		[0, 0, 0],
 		[0, 0, 1],
-		[1, 1, 1]
+		[1, 1, 1],
+		[0, 0, 0]
 	])
 ];
 let currentTetris;
