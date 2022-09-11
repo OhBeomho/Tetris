@@ -127,6 +127,10 @@ class Tetris {
 
 		this.shape = tempShape;
 	}
+
+	drop() {
+		while (!this.checkBottom()) this.y++;
+	}
 }
 
 // 모양들
@@ -210,7 +214,8 @@ ctx.fillText('Press any key to start', 10, 40);
 ctx.font = '16px Segoe UI Light';
 ctx.fillText('R - Rotate', 10, 60);
 ctx.fillText('A, D - Move', 10, 80);
-ctx.fillText('S - Drop', 10, 100);
+ctx.fillText('S - Soft Drop', 10, 100);
+ctx.fillText('X - Hard Drop', 10, 120);
 
 window.addEventListener('keydown', (e) => {
 	if (!started) {
@@ -226,8 +231,10 @@ window.addEventListener('keydown', (e) => {
 	// 좌우 움직이기
 	if (key === 'a' && !currentTetris.checkLeft()) currentTetris.x--;
 	if (key === 'd' && !currentTetris.checkRight()) currentTetris.x++;
-	// drop
-	if (key === 's') delay = 1;
+	// soft drop
+	if (key === 's') delay = 2;
+	// hard drop
+	if (key === 'x') currentTetris.drop();
 });
 
 function startGame() {
