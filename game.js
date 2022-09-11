@@ -17,19 +17,14 @@ class Tetris {
 
 		this.x = Math.floor(Math.random() * (cellCanvasWidth - this.shape[0].length));
 		this.y = 0;
-		this.delay = 30;
-		this.delayCount = 0;
 	}
 
 	update() {
-		this.delayCount++;
-
-		if (!this.checkBottom() && this.delayCount >= this.delay) {
-			this.y++;
-			this.delayCount = 0;
-		} else if (this.checkBottom()) this.stop();
+		if (!this.checkBottom()) this.y++;
+		else if (this.checkBottom()) this.stop();
 	}
 
+	// 아래쪽 확인
 	checkBottom() {
 		for (let i = 0; i < this.shape.length; i++) {
 			for (let j = 0; j < this.shape[i].length; j++) {
@@ -41,6 +36,7 @@ class Tetris {
 		return false;
 	}
 
+	// 왼쪽 확인
 	checkLeft() {
 		for (let i = 0; i < this.shape.length; i++) {
 			for (let j = 0; j < this.shape[i].length; j++) {
@@ -51,6 +47,7 @@ class Tetris {
 		return false;
 	}
 
+	// 오른쪽 확인
 	checkRight() {
 		for (let i = 0; i < this.shape.length; i++) {
 			for (let j = 0; j < this.shape[i].length; j++) {
@@ -91,7 +88,7 @@ class Tetris {
 		tempTetris.y = this.y;
 		while (!tempTetris.checkBottom()) tempTetris.y++;
 		ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
-		
+
 		for (let i = 0; i < tempTetris.shape.length; i++) {
 			for (let j = 0; j < tempTetris.shape[i].length; j++) {
 				if (tempTetris.shape[i][j] === 1)
@@ -130,12 +127,9 @@ class Tetris {
 
 		this.shape = tempShape;
 	}
-
-	drop() {
-		this.delay = 2;
-	}
 }
 
+// 모양들
 const shapes = [
 	new Tetris('red', [
 		[1, 1, 0],
@@ -191,7 +185,7 @@ let started = false;
 let score = 0;
 
 function drawGrid() {
-	ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+	ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
 	ctx.lineWidth = 1;
 
 	ctx.beginPath();
@@ -227,16 +221,22 @@ window.addEventListener('keydown', (e) => {
 
 	const key = e.key.toLowerCase();
 
+	// 회전
 	if (key === 'r') currentTetris.rotate();
+	// 좌우 움직이기
 	if (key === 'a' && !currentTetris.checkLeft()) currentTetris.x--;
 	if (key === 'd' && !currentTetris.checkRight()) currentTetris.x++;
-	if (key === 's') currentTetris.drop();
+	// drop
+	if (key === 's') delay = 1;
 });
 
 function startGame() {
 	newTetris();
 	game();
 }
+
+let delay = 30;
+let delayCount = 0;
 
 function game() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -250,8 +250,13 @@ function game() {
 		}
 	}
 
+	delayCount++;
+
 	currentTetris.draw();
-	currentTetris.update();
+	if (delayCount >= delay) {
+		currentTetris.update();
+		delayCount = 0;
+	}
 
 	drawGrid();
 
@@ -271,16 +276,6 @@ function gameOver() {
 	isGameOver = true;
 
 	setTimeout(() => {
-		ctx.fillStyle = 'gray';
-		for (let i = 0; i < tArray.length; i++) {
-			for (let j = 0; j < tArray.length; j++) {
-				if (tArray[i][j]) {
-					ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
-				}
-			}
-		}
-	}, 100);
-	setTimeout(() => {
 		ctx.fillStyle = 'white';
 		ctx.font = '50px Segoe UI Light';
 		ctx.fillText('GAME OVER', 10, 60);
@@ -291,6 +286,7 @@ function gameOver() {
 function newTetris() {
 	const random = Object.create(shapes[Math.floor(Math.random() * shapes.length)]);
 	currentTetris = new Tetris(random);
+	delay = 30;
 }
 
 function checkComplete() {
@@ -302,8 +298,9 @@ function checkComplete() {
 function deleteLine(y) {
 	score += 100;
 
+	// 깜빡거림 효과
 	let effect = setInterval(() => {
-		for (let i = 0; i < tArray[0].length; i++) tArray[y][i] = tArray[y][i] === 'white' ? 0 : 'white';
+		for (let i = 0; i < tArray[0].length; i++) tArray[y][i] = tArray[y][i] === 'white' ? 'black' : 'white';
 	}, 50);
 
 	setTimeout(() => {
