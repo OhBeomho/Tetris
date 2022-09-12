@@ -177,7 +177,8 @@ const shapes = [
 		[0, 0, 0]
 	])
 ];
-let current, next = new TetrisBlock(Object.create(shapes[Math.floor(Math.random() * shapes.length)]));
+let current,
+	next = new TetrisBlock(Object.create(shapes[Math.floor(Math.random() * shapes.length)]));
 
 const map = [];
 for (let i = 0; i < cellCanvasHeight; i++) {
@@ -319,6 +320,11 @@ function gameOver() {
 		ctx.fillText('SCORE: ' + score, 10, 120);
 		ctx.strokeText('GAME OVER', 10, 60);
 		ctx.strokeText('SCORE: ' + score, 10, 120);
+
+		const restartButton = document.createElement('button');
+		restartButton.innerText = 'Restart';
+		restartButton.addEventListener('click', () => location.reload());
+		document.body.appendChild(restartButton);
 	}, 1000);
 }
 
